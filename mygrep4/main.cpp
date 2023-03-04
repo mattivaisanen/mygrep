@@ -27,114 +27,113 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    else if(argc == 3 || argc == 4) {
+
+    if(argc == 3){
         string line;
+        string search_string = argv[1];
+        string filename = argv[2];
+        ifstream file(filename);
 
-        if(argc == 3){
-            string search_string = argv[1];
-            string filename = argv[2];
-            ifstream file(filename);
+        if (!file.is_open()) {
+            cerr << "Error opening file " << filename << " \nPlease check filename and permissions" << endl;
+            return 0;
+        }
 
-            if (!file.is_open()) {
-                cerr << "Error opening file " << filename << " Please check filename and permissions" << endl;
-                return 0;
+        while (getline(file, line)) {
+            if (line.find(search_string) != string::npos) {
+                cout << line << endl;
+            }
+        }
+    }
+
+    if(argc == 4){
+        int linecount = 0;
+        int line_number = 1;
+
+        string line;
+        string options = argv[1];
+        string search_string = argv[2];
+        string filename = argv[3];
+
+        ifstream file(filename);
+
+        if (!file.is_open()) {
+            cerr << "Error opening file " << filename << " \nPlease check filename and permissions" << endl;
+            return 0;
+        }
+
+        //Bool values for different options
+        bool linenumber_option = false;
+        bool occurrance_option = false;
+        bool reverse_option = false;
+        bool caseinsensitive_option = false;
+
+
+        for (int i = 2; i < options.size()/sizeof(options[0]); i++) {
+            if (options[i] == 'l') {
+                linenumber_option = true;
             }
 
-            while (getline(file, line)) {
-                if (line.find(search_string) != string::npos) {
-                    cout << line << endl;
-                }
+            if (options[i] == 'o') {
+                occurrance_option = true;
+            }
+
+            if (options[i] == 'r') {
+                reverse_option = true;
+            }
+
+            if (options[i] == 'i') {
+                caseinsensitive_option = true;
             }
         }
 
-        if(argc == 4){
-            int linecount = 0;
-            int line_number = 1;
+        if(reverse_option){
+            string line_case;
+            string search_case;
+            search_case = search_string;
+            while (getline(file, line)) {
+                line_case = line;
+                if(caseinsensitive_option){
+                    transform(line.begin(), line.end(), line.begin(), ::toupper);
+                    transform(search_string.begin(), search_string.end(), search_string.begin(), ::toupper);
+                }
+                if (line.find(search_string) == string::npos) {
+                    if(linenumber_option){
+                        cout << line_number << ": ";
+                    }
+                    cout << line_case << endl;
+                    linecount++;
+                }
+                line_number++;
+            }
+            if(occurrance_option){
+                cout << endl << "Occurrances of lines NOT containing '" << search_case << "': " << linecount;
+            }
+        }
 
-            string options = argv[1];
-            string search_string = argv[2];
-            string filename = argv[3];
-
-            ifstream file(filename);
-
-            if (!file.is_open()) {
-                cerr << "Error opening file " << filename << " Please check filename and permissions" << endl;
-                return 0;
+        else{
+            string line_case;
+            string search_case;
+            search_case = search_string;
+            while (getline(file, line)) {
+                line_case = line;
+                if(caseinsensitive_option){
+                    transform(line.begin(), line.end(), line.begin(), ::toupper);
+                    transform(search_string.begin(), search_string.end(), search_string.begin(), ::toupper);
+                }
+                if (line.find(search_string) != string::npos) {
+                    if(linenumber_option){
+                        cout << line_number << ": ";
+                    }
+                    cout << line_case << endl;
+                    linecount++;
+                }
+                line_number++;
+            }
+            if(occurrance_option){
+                cout << endl << "Occurrances of lines containing '" << search_case << "': " << linecount;
             }
 
-            //Bool values for different options
-            bool linenumber_option = false;
-            bool occurrance_option = false;
-            bool reverse_option = false;
-            bool caseinsensitive_option = false;
-
-
-            for (int i = 2; i < options.size()/sizeof(options[0]); i++) {
-                if (options[i] == 'l') {
-                    linenumber_option = true;
-                }
-
-                if (options[i] == 'o') {
-                    occurrance_option = true;
-                }
-
-                if (options[i] == 'r') {
-                    reverse_option = true;
-                }
-
-                if (options[i] == 'i') {
-                    caseinsensitive_option = true;
-                }
-            }
-
-            if(reverse_option){
-                string line_case;
-                string search_case;
-                search_case = search_string;
-                while (getline(file, line)) {
-                    line_case = line;
-                    if(caseinsensitive_option){
-                        transform(line.begin(), line.end(), line.begin(), ::toupper);
-                        transform(search_string.begin(), search_string.end(), search_string.begin(), ::toupper);
-                    }
-                    if (line.find(search_string) == string::npos) {
-                        if(linenumber_option){
-                            cout << line_number << ": ";
-                        }
-                        cout << line_case << endl;
-                        linecount++;
-                    }
-                    line_number++;
-                }
-                if(occurrance_option){
-                    cout << endl << "Occurrances of lines NOT containing '" << search_case << "': " << linecount;
-                }
-            }
-
-            else{
-                string line_case;
-                string search_case;
-                search_case = search_string;
-                while (getline(file, line)) {
-                    line_case = line;
-                    if(caseinsensitive_option){
-                        transform(line.begin(), line.end(), line.begin(), ::toupper);
-                        transform(search_string.begin(), search_string.end(), search_string.begin(), ::toupper);
-                    }
-                    if (line.find(search_string) != string::npos) {
-                        if(linenumber_option){
-                            cout << line_number << ": ";
-                        }
-                        cout << line_case << endl;
-                        linecount++;
-                    }
-                    line_number++;
-                }
-                if(occurrance_option){
-                    cout << endl << "Occurrances of lines containing '" << search_case << "': " << linecount;
-                }
-
-            }
         }
     }
 
